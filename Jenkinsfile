@@ -1,24 +1,25 @@
 pipeline {
     agent any
-
+    tools { maven 'Default Maven' } // correspond à l'installation Maven dans Jenkins
     stages {
         stage('Checkout SCM') {
             steps {
-                checkout scm
+                git url: 'https://github.com/asma0123/Devpos.git', branch: 'main'
             }
         }
-
         stage('Maven Clean & Compile') {
             steps {
-                // Exécution dans la racine, car pom.xml est ici
-                sh 'mvn clean compile'
+                dir('DevposApp') {
+                    sh 'mvn clean compile'
+                }
             }
         }
-
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh 'mvn sonar:sonar'
+                dir('DevposApp') {
+                    withSonarQubeEnv('sonarqube') { // nom de l'installation SonarQube dans Jenkins
+                        sh 'mvn sonar:sonar'
+                    }
                 }
             }
         }
