@@ -2,10 +2,23 @@ node {
     stage('SCM') {
         checkout scm
     }
+
+    stage('Maven Clean') {
+        def mvn = tool 'Default Maven'
+        sh "${mvn}/bin/mvn clean"
+    }
+
+    stage('Maven Compile') {
+        def mvn = tool 'Default Maven'
+        sh "${mvn}/bin/mvn compile"
+    }
+
     stage('SonarQube Analysis') {
-        def mvn = tool 'Default Maven';
-        withSonarQubeEnv() {
-            sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=Devpos -Dsonar.projectName='Devpos' -Dsonar.login=squ_648ff9da2f9b2824d303395294c10a4aff843797"
+        def mvn = tool 'Default Maven'
+        withSonarQubeEnv('sonarqube') {
+            withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                sh "${mvn}/bin/mvn verify sonar:sonar -Dsonar.projectKey=Devpos -Dsonar.projectName='Devpos' -Dsonar.login=$SONAR_TOKEN"
+            }
         }
     }
 }
