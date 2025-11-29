@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'Default' // Nom de ton installation Maven dans Jenkins
+        maven 'Default Maven' // <-- corrige ici
     }
 
     stages {
@@ -14,7 +14,7 @@ pipeline {
 
         stage('Maven Clean & Compile') {
             steps {
-                dir('DevposApp') { // <-- pointez vers le dossier avec pom.xml
+                dir('DevposApp') {
                     sh 'mvn clean compile'
                 }
             }
@@ -22,7 +22,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             environment {
-                SONAR_TOKEN = credentials('token') // ton ID des credentials secrets
+                SONAR_TOKEN = credentials('token')
             }
             steps {
                 dir('DevposApp') {
